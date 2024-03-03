@@ -15,3 +15,9 @@ Python: Ensure you have Python installed on your system. Python 3.6 or later is 
 pip install torch
 
 ## Step 3: Load GPT model
+
+python3 load_model.py
+
+## Step 4: Generate text
+
+python3 generate_text.py
