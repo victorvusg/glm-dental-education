@@ -21,3 +21,4 @@ python3 load_model.py
 ## Step 4: Generate text
 
 python3 generate_text.py
+
