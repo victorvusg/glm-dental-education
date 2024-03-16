@@ -22,6 +22,8 @@ pip install pydantic
 pip install fastapi
 pip install uvicorn
 
+cd $HOME/git/llm-as-a-service/
+
 export RANK="0"
 export WORLD_SIZE="1"
 export MASTER_ADDR="0.0.0.0"

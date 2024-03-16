@@ -102,11 +102,18 @@ def process_message(dialog: Annotated[list[dict], Depends(preprocess_message)]) 
 from typing import Annotated
 
 from fastapi import Depends, FastAPI, status
+from fastapi.middleware.cors import CORSMiddleware
 
 # from laas import api_models, config, engine
 
 app = FastAPI()
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=['*'],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.on_event("startup")
 async def startup():

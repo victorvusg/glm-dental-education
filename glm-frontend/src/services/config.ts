@@ -1,8 +1,8 @@
 import { MODE } from '../constants';
 
 const LINKS = {
-  [MODE.DEVELOPMENT]: ':8080',
-  [MODE.PRODUCTION]: '3.8.132.73:8080',
+  [MODE.DEVELOPMENT]: 'http://13.43.138.146:8080',
+  [MODE.PRODUCTION]: 'http://13.43.138.146:8080',
 };
 
 console.log(`Mode: ${import.meta.env.MODE}`);

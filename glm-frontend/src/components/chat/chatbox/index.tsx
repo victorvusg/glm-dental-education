@@ -1,49 +1,12 @@
-import React, { useEffect, useState } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import { Avatar, Divider, List, Skeleton } from 'antd';
+import { List, Skeleton } from 'antd';
+import { Message, Role } from '../../../pages/chat';
 
-interface DataType {
-  gender: string;
-  name: {
-    title: string;
-    first: string;
-    last: string;
-  };
-  email: string;
-  picture: {
-    large: string;
-    medium: string;
-    thumbnail: string;
-  };
-  nat: string;
+interface Props {
+  dialog: Message[];
 }
 
-const ChatBox: React.FC = () => {
-  const [loading, setLoading] = useState(false);
-  const [data, setData] = useState<DataType[]>([]);
-
-  const loadMoreData = () => {
-    if (loading) {
-      return;
-    }
-    setLoading(true);
-    fetch(
-      'https://randomuser.me/api/?results=10&inc=name,gender,email,nat,picture&noinfo'
-    )
-      .then((res) => res.json())
-      .then((body) => {
-        setData([...data, ...body.results]);
-        setLoading(false);
-      })
-      .catch(() => {
-        setLoading(false);
-      });
-  };
-
-  useEffect(() => {
-    loadMoreData();
-  }, []);
-
+const ChatBox = ({ dialog }: Props) => {
   return (
     <div
       id='scrollableDiv'
@@ -55,23 +18,37 @@ const ChatBox: React.FC = () => {
       }}
     >
       <InfiniteScroll
-        dataLength={data.length}
-        next={loadMoreData}
-        hasMore={data.length < 50}
+        dataLength={dialog.length}
+        next={() => {}}
         loader={<Skeleton avatar paragraph={{ rows: 1 }} active />}
-        endMessage={<Divider plain>It is all, nothing more 🤐</Divider>}
         scrollableTarget='scrollableDiv'
+        hasMore={false}
+        inverse={false}
       >
         <List
-          dataSource={data}
-          renderItem={(item) => (
-            <List.Item key={item.email}>
-              <List.Item.Meta
-                avatar={<Avatar src={item.picture.large} />}
-                title={<a href='https://ant.design'>{item.name.last}</a>}
-                description={item.email}
-              />
-              <div>Content</div>
+          dataSource={dialog}
+          renderItem={(message: Message) => (
+            <List.Item
+              style={{
+                display: 'flex',
+                flexDirection:
+                  message.role === Role.USER ? 'row-reverse' : 'row',
+              }}
+            >
+              <List.Item.Meta />
+              <div
+                style={{
+                  display: 'flex',
+                  gap: '8px',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+              >
+                <div>
+                  <p style={{ fontWeight: 'bold' }}>{message.role}:</p>
+                </div>
+                <div>{message.content}</div>
+              </div>
             </List.Item>
           )}
         />
