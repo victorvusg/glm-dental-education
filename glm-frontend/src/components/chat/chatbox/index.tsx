@@ -35,18 +35,15 @@ const ChatBox = ({ dialog }: Props) => {
                   message.role === Role.USER ? 'row-reverse' : 'row',
               }}
             >
-              <List.Item.Meta />
               <div
                 style={{
                   display: 'flex',
                   gap: '8px',
                   justifyContent: 'center',
                   alignItems: 'center',
+                  maxWidth: '600px',
                 }}
               >
-                <div>
-                  <p style={{ fontWeight: 'bold' }}>{message.role}:</p>
-                </div>
                 <div>{message.content}</div>
               </div>
             </List.Item>
