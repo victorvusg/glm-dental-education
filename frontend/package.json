@@ -11,6 +11,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@aws-sdk/client-polly": "^3.535.0",
+    "@aws-sdk/client-transcribe": "^3.535.0",
     "antd": "^5.15.2",
     "axios": "^1.6.8",
     "dotenv": "^16.4.5",
