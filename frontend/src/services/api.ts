@@ -18,19 +18,21 @@ async function getHealth() {
   }
 }
 
-async function processMessage(message: string) {
+async function processMessage(message: string, dialog: []) {
   try {
     const response = await axios.post(
       `/process_message`,
       {
         history: [
           {
-            content: 'You are nice assistant. Be nice.',
             role: 'system',
+            content:
+              'Now you are a dental patient and I am a doctor, let start conversation',
           },
+          ...dialog,
           {
-            content: message,
             role: 'user',
+            content: message,
           },
         ],
       },

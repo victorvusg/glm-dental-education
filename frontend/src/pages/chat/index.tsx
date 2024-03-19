@@ -10,7 +10,7 @@ export interface Message {
 
 export enum Role {
   'USER' = 'user',
-  'SYSTEM' = 'system',
+  'SYSTEM' = 'assistant',
 }
 
 const Chat = () => {
@@ -20,7 +20,7 @@ const Chat = () => {
   console.log(dialog);
 
   const onAsk = useCallback(() => {
-    processMessage(message)
+    processMessage(message, dialog)
       .then((data) => {
         setDialog([
           ...dialog,
