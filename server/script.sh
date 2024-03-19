@@ -1,5 +1,4 @@
-ssh -i "ec2-london.pem" ec2-user@ec2-3-8-198-74.eu-west-2.compute.amazonaws.com
-
+ssh -i "ec2-london.pem" ec2-user@ec2-18-132-39-64.eu-west-2.compute.amazonaws.com
 cd $HOME
 mkdir git
 cd git

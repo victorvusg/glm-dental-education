@@ -46,7 +46,7 @@ async function processMessage(message: string) {
     return response.data;
   } catch (error) {
     //
-    return 'ashdkajdjaskdjasdkasjdaskdjasn';
+    return 'Error: There is something wrong!';
   }
 }
 
