@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { API_URL } from './config';
+import { Message } from '../pages/chat';
 
 axios.defaults.baseURL = API_URL;
 
@@ -18,7 +19,13 @@ async function getHealth() {
   }
 }
 
-async function processMessage(message: string, dialog: []) {
+async function processMessage(
+  message: string,
+  dialog: Message[],
+  options: string[],
+  context: string,
+  patientName: string
+) {
   try {
     const response = await axios.post(
       `/process_message`,
@@ -26,8 +33,13 @@ async function processMessage(message: string, dialog: []) {
         history: [
           {
             role: 'system',
-            content:
-              'Now you are a dental patient and I am a doctor, let start conversation',
+            content: `
+              Now your name is ${patientName}, 
+              you are a dental patient you, have some symptom: ${
+                options ? options.toString() : ''
+              } and I am a doctor. 
+              Your patient context is: ${context}, let start conversation.
+            `,
           },
           ...dialog,
           {
