@@ -46,13 +46,13 @@ class EngineInput(BaseModel):
 # Config ================================================================================
 CHECKPOINT_DIR = "/home/ec2-user/git/llama/llama-2-7b-chat/"
 TOKENIZER_PATH = "/home/ec2-user/git/llama/tokenizer.model"
-MAX_SEQ_LEN = 512
+MAX_SEQ_LEN = 4096
 MAX_BATCH_SIZE = 8
 MODEL_PARALLEL_SIZE = 1
 
 TEMPERATURE = 0.6
 TOP_P = 0.9
-MAX_GEN_LEN = 64
+MAX_GEN_LEN = 4096
 HOST = "0.0.0.0"
 PORT = 8080
     
