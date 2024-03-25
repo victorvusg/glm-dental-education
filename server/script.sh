@@ -21,7 +21,7 @@ pip install pydantic
 pip install fastapi
 pip install uvicorn
 
-cd $HOME/git/llm-as-a-service/
+cd /home/ec2-user/git/glm-dental-education/backend/laas/
 
 export RANK="0"
 export WORLD_SIZE="1"
