@@ -30,4 +30,4 @@ export MASTER_PORT="2137"
 export NCCL_P2P_DISABLE="1"
 export OMP_NUM_THREADS=4  # optional
 
-python laas/main.py
+python main.py
