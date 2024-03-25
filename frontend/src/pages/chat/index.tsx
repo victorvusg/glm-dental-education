@@ -55,9 +55,9 @@ const Chat = () => {
           onChange={(e) => setMessage(e.target.value)}
           onPressEnter={() => onAsk()}
         />
-        <Button type='primary' onClick={() => onAsk()}>
+        <button className='bg-blue-500 text-white' onClick={() => onAsk()}>
           Send
-        </Button>
+        </button>
       </div>
     </div>
   );

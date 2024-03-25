@@ -4,6 +4,8 @@ import Settings from './pages/settings';
 import NotFound from './pages/404';
 import Home from './pages/home';
 import Chat from './pages/chat';
+import Login from './pages/authentication/login';
+import SignUp from './pages/authentication/signup';
 
 function App() {
   const router = createBrowserRouter([
@@ -18,6 +20,14 @@ function App() {
       //     loader: teamLoader,
       //   },
       // ],
+    },
+    {
+      path: '/login',
+      element: <Login />,
+    },
+    {
+      path: '/sign-up',
+      element: <SignUp />,
     },
     {
       path: '/settings',

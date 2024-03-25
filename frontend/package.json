@@ -14,14 +14,16 @@
     "@aws-sdk/client-polly": "^3.535.0",
     "@aws-sdk/client-transcribe": "^3.535.0",
     "antd": "^5.15.2",
+    "autoprefixer": "^10.4.19",
     "axios": "^1.6.8",
     "dotenv": "^16.4.5",
+    "postcss": "^8.4.38",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-infinite-scroll-component": "^6.1.0",
     "react-router": "^6.22.3",
     "react-router-dom": "^6.22.3",
-    "styled-components": "^6.1.8"
+    "tailwindcss": "^3.4.1"
   },
   "devDependencies": {
     "@types/node": "^20.11.28",
