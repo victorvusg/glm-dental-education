@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { API_URL } from './config';
 import { Message } from '../pages/chat';
+import { removeTextInsideAsterisks } from '../utils';
 
 axios.defaults.baseURL = API_URL;
 
@@ -35,10 +36,9 @@ async function processMessage(
             role: 'system',
             content: `
               Now your name is ${patientName}, 
-              you are a dental patient you, have some symptom: ${
+              you are a dental patient, you are meeting a dentist now, have some symptom: ${
                 options ? options.toString() : ''
-              } and I am a doctor. 
-              Your patient context is: ${context}, let start conversation.
+              }, let start conversation.
             `,
           },
           ...dialog,
@@ -57,10 +57,11 @@ async function processMessage(
       }
     );
 
-    return response.data;
+    return removeTextInsideAsterisks(response.data as string);
   } catch (error) {
     //
-    return 'Error: There is something wrong!';
+    console.error(error);
+    return '';
   }
 }
 

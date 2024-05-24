@@ -1,8 +1,11 @@
 import { Input, Select } from 'antd';
-import { useCallback, useState } from 'react';
+import { SetStateAction, useCallback, useEffect, useState } from 'react';
 import ChatBox from '../../components/chat/chatbox';
 import { processMessage } from '../../services/api';
-import TextArea from 'antd/es/input/TextArea';
+import 'regenerator-runtime';
+import useSpeechToText from '../../hooks/useSpeechToText';
+import useTextToSpeech from '../../hooks/useTextToSpeech';
+import { voiceList } from './constants';
 
 export interface Message {
   role: Role;
@@ -20,6 +23,12 @@ const Chat = () => {
   const [options, setOptions] = useState<string[]>(
     (JSON.parse(localStorage.getItem('tags') || '[]') as string[]) || []
   );
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  const [isInitialised, setIsInitialised] = useState<boolean>(false);
+
+  const [voice, setVoice] = useState(voiceList[0].value);
+
   const [patientName, setPatientName] = useState<string>(
     localStorage.getItem('patientName') || ''
   );
@@ -27,36 +36,92 @@ const Chat = () => {
     localStorage.getItem('context') || ''
   );
 
-  const onAsk = useCallback(() => {
-    processMessage(message, dialog, options, patientContext, patientName)
-      .then((data) => {
-        setDialog([
-          ...dialog,
-          {
-            role: Role.USER,
-            content: message,
-          },
-          {
-            role: Role.SYSTEM,
-            content: data,
-          },
-        ]);
+  const { startListening, stopListening, reset, transcript, listening } =
+    useSpeechToText();
+
+  const { onSpeak, setVoiceId } = useTextToSpeech();
+
+  const onAsk = useCallback(
+    (text?: string, autoSpeaking?: boolean) => {
+      setIsLoading(true);
+      return new Promise((resolve, reject) => {
+        stopListening();
         setMessage('');
-      })
-      .catch(() => {});
-  }, [message, setMessage, dialog, options, patientContext, patientName]);
+        reset();
+        processMessage(
+          text || message,
+          dialog,
+          options,
+          patientContext,
+          patientName
+        )
+          .then((data) => {
+            !!autoSpeaking &&
+              onSpeak(data).then(() => {
+                startListening({ continuous: true, interimResults: true });
+              });
+            setDialog([
+              ...dialog,
+              {
+                role: Role.USER,
+                content: message,
+              },
+              {
+                role: Role.SYSTEM,
+                content: data,
+              },
+            ]);
+            setMessage('');
+            setIsLoading(false);
+            resolve(resolve);
+          })
+          .catch(() => {
+            setIsLoading(false);
+            reject(reject);
+          });
+      });
+    },
+    [
+      stopListening,
+      reset,
+      message,
+      dialog,
+      options,
+      patientContext,
+      patientName,
+      onSpeak,
+      startListening,
+    ]
+  );
+
+  const onVoiceAsk = useCallback(() => {
+    if (listening) {
+      stopListening();
+    } else {
+      setMessage('');
+      reset();
+      startListening({ continuous: true, interimResults: true });
+    }
+  }, [listening, reset, startListening, stopListening]);
 
   const onChangeTags = (values: string[]) => {
-    console.log(values, 'values');
-
     setOptions(values);
     localStorage.setItem('tags', JSON.stringify(values));
   };
 
-  const onChangeContext = (value: string) => {
-    setPatientContext(value);
-    localStorage.setItem('context', value);
-  };
+  const onChangeVoice = useCallback(
+    (value) => {
+      setVoice(value);
+
+      setVoiceId(value);
+    },
+    [setVoiceId]
+  );
+
+  // const onChangeContext = (value: string) => {
+  //   setPatientContext(value);
+  //   localStorage.setItem('context', value);
+  // };
 
   const onChangePatientName = (value: string) => {
     setPatientName(value);
@@ -66,6 +131,26 @@ const Chat = () => {
   const onSave = () => {
     setDialog([]);
   };
+
+  useEffect(() => {
+    setMessage(transcript);
+  }, [transcript]);
+
+  useEffect(() => {
+    if (!isInitialised) {
+      setIsInitialised(true);
+      setIsLoading(true);
+      onAsk()
+        .then(() => {
+          setIsInitialised(true);
+          setIsLoading(false);
+        })
+        .catch(() => {
+          setIsInitialised(true);
+          setIsLoading(false);
+        });
+    }
+  }, [isInitialised, onAsk]);
 
   return (
     <div
@@ -85,43 +170,55 @@ const Chat = () => {
             value={patientName}
             onChange={(e) => onChangePatientName(e.target.value)}
           />
-          <p className='mb-2'>Patient's symptoms:</p>
+
+          <p className='mb-2'>Patient's voice</p>
           <Select
-            defaultValue={options}
+            style={{ maxWidth: '200px', width: '200px' }}
+            placeholder='Select Voice'
+            onChange={onChangeVoice}
+            options={voiceList}
+            value={voice}
+            className='mb-2'
+          />
+
+          <p className='mb-2 mt-4'>Patient's symptoms:</p>
+          <Select
             mode='tags'
+            defaultValue={options}
             style={{ maxWidth: '200px', width: '200px' }}
             placeholder='Tags Mode'
             onChange={onChangeTags}
-            options={
-              options?.map((v) => {
-                return { label: v, value: v };
-              }) || []
-            }
-          />
-
-          <p className='mt-8 mb-2'>Patient's context:</p>
-          <TextArea
-            value={patientContext}
-            onChange={(e) => onChangeContext(e.target.value)}
+            options={[]}
           />
 
           <div className='mt-8 justify-items-end'>
-            <button className='bg-blue-500 text-white' onClick={onSave}>
+            <button className='bg-green-700 text-white' onClick={onSave}>
               Save
             </button>
           </div>
         </div>
       </div>
       <div className='grow'>
-        <ChatBox dialog={dialog} />
+        <ChatBox isLoading={isLoading} dialog={[...dialog].slice(2)} />
         <div className='flex gap-8 mt-2'>
           <Input
             width={1000}
             value={message}
             onChange={(e) => setMessage(e.target.value)}
-            onPressEnter={() => onAsk()}
           />
-          <button className='bg-blue-500 text-white ' onClick={() => onAsk()}>
+          <button
+            className={`bg-green-700 text-white ${listening && 'loading'}`}
+            onClick={() => onVoiceAsk()}
+            style={{ width: '250px' }}
+            disabled={isLoading}
+          >
+            {listening ? 'Listening' : 'Click to speak'}
+          </button>
+          <button
+            className='bg-green-700 text-white '
+            onClick={() => onAsk(message, true)}
+            disabled={isLoading}
+          >
             Send
           </button>
         </div>
