@@ -104,13 +104,16 @@ from typing import Annotated
 from fastapi import Depends, FastAPI, status
 from fastapi.middleware.cors import CORSMiddleware
 
+
 # from laas import api_models, config, engine
 
 app = FastAPI()
 
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=['*'],
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
